@@ -22,9 +22,9 @@ export function DashboardSidebar() {
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
       .toUpperCase();
   };
 
@@ -66,7 +66,11 @@ export function DashboardSidebar() {
       {/* Mobile menu button */}
       <div className="lg:hidden fixed top-16 left-0 z-20 m-4">
         <Button variant="outline" size="icon" onClick={toggleMobileMenu}>
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
         </Button>
       </div>
 
@@ -82,8 +86,12 @@ export function DashboardSidebar() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-medium">{user.displayName || user.username}</p>
-                  <p className="text-xs text-gray-500">{user.isPro ? "Pro Plan" : "Free Plan"}</p>
+                  <p className="text-sm font-medium">
+                    {user.displayName || user.username}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {user.isPro ? "Pro Plan" : "Free Plan"}
+                  </p>
                 </div>
               </div>
             )}
@@ -91,7 +99,7 @@ export function DashboardSidebar() {
           <nav className="mt-5 flex-1 px-2 space-y-1">
             {navItems.map((item) => {
               if (item.proOnly && !user?.isPro) return null;
-              
+
               return (
                 <Link key={item.href} href={item.href}>
                   <a
@@ -99,7 +107,7 @@ export function DashboardSidebar() {
                       "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                       location === item.href
                         ? "bg-primary-50 text-primary"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                     )}
                   >
                     <item.icon
@@ -107,7 +115,7 @@ export function DashboardSidebar() {
                         "mr-3 flex-shrink-0 h-5 w-5",
                         location === item.href
                           ? "text-primary"
-                          : "text-gray-400 group-hover:text-gray-500"
+                          : "text-gray-400 group-hover:text-gray-500",
                       )}
                     />
                     {item.title}
@@ -122,7 +130,10 @@ export function DashboardSidebar() {
       {/* Mobile sidebar */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 flex z-10 pt-16">
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={toggleMobileMenu} />
+          <div
+            className="fixed inset-0 bg-gray-600 bg-opacity-75"
+            onClick={toggleMobileMenu}
+          />
           <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
             <div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
               <div className="flex items-center flex-shrink-0 px-4 mb-5">
@@ -134,8 +145,12 @@ export function DashboardSidebar() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-sm font-medium">{user.displayName || user.username}</p>
-                      <p className="text-xs text-gray-500">{user.isPro ? "Pro Plan" : "Free Plan"}</p>
+                      <p className="text-sm font-medium">
+                        {user.displayName || user.username}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {user.isPro ? "Pro Plan" : "Free Plan"}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -143,7 +158,7 @@ export function DashboardSidebar() {
               <nav className="mt-5 flex-1 px-2 space-y-1">
                 {navItems.map((item) => {
                   if (item.proOnly && !user?.isPro) return null;
-                  
+
                   return (
                     <Link key={item.href} href={item.href}>
                       <a
@@ -151,7 +166,7 @@ export function DashboardSidebar() {
                           "group flex items-center px-2 py-2 text-base font-medium rounded-md",
                           location === item.href
                             ? "bg-primary-50 text-primary"
-                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                         )}
                         onClick={toggleMobileMenu}
                       >
@@ -160,7 +175,7 @@ export function DashboardSidebar() {
                             "mr-3 flex-shrink-0 h-6 w-6",
                             location === item.href
                               ? "text-primary"
-                              : "text-gray-400 group-hover:text-gray-500"
+                              : "text-gray-400 group-hover:text-gray-500",
                           )}
                         />
                         {item.title}
