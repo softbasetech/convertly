@@ -9,9 +9,21 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 
+import { Helmet } from "react-helmet";
+
 export default function DocsPage() {
   const [copiedEndpoint, setCopiedEndpoint] = useState<string | null>(null);
   const { user } = useAuth();
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "ConvertHub API Documentation",
+    "description": "Comprehensive documentation for ConvertHub's file conversion and QR code generation API",
+    "keywords": "API documentation, file conversion API, QR code API, ConvertHub API",
+    "articleSection": "Technical Documentation",
+    "audience": "Developers"
+  };
   
   const copyToClipboard = (text: string, endpoint: string) => {
     navigator.clipboard.writeText(text);
@@ -21,6 +33,18 @@ export default function DocsPage() {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>API Documentation - ConvertHub Developer Resources</title>
+        <meta name="description" content="Integrate ConvertHub's powerful file conversion and QR code generation APIs into your applications. Comprehensive documentation and examples." />
+        <meta name="keywords" content="API documentation, file conversion API, QR code API, REST API, developer docs" />
+        <meta property="og:title" content="ConvertHub API Documentation" />
+        <meta property="og:description" content="Integrate ConvertHub's powerful file conversion and QR code generation APIs into your applications." />
+        <meta property="og:type" content="article" />
+        <link rel="canonical" href="https://converthub.com/docs" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
       <Navbar />
       <main className="flex-grow py-12 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">

@@ -11,12 +11,40 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { Helmet } from "react-helmet";
+
 export default function ImageConvertPage() {
   const { user } = useAuth();
   const imageConversionOptions = getImageConversionOptions();
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ConvertHub Image Converter",
+    "applicationCategory": "Multimedia",
+    "operatingSystem": "Web",
+    "description": "Convert images between formats including JPG, PNG, WebP. Free online image converter with high quality results.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Free Online Image Converter - Convert JPG, PNG, WebP | ConvertHub</title>
+        <meta name="description" content="Convert images between JPG, PNG, WebP and other formats. Free online image converter with high quality results. No registration required." />
+        <meta name="keywords" content="image converter, JPG to PNG, PNG to WebP, image format conversion, online converter" />
+        <meta property="og:title" content="Free Online Image Converter - ConvertHub" />
+        <meta property="og:description" content="Convert images between JPG, PNG, WebP and other formats. High quality image conversion." />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://converthub.com/convert/image" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
       <Navbar />
       <main className="flex-grow py-12 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">

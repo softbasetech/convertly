@@ -7,8 +7,25 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 
+import { Helmet } from "react-helmet";
+
 export default function ConvertPage() {
   const { user, isLoading } = useAuth();
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ConvertHub File Converter",
+    "applicationCategory": "Utility",
+    "operatingSystem": "Web",
+    "description": "All-in-one file conversion platform. Convert documents, images, and generate QR codes with ease.",
+    "featureList": [
+      "PDF conversion",
+      "Image format conversion",
+      "Document conversion",
+      "QR code generation"
+    ]
+  };
   
   // Optional: redirect to auth if not logged in
   // if (!isLoading && !user) {
@@ -17,6 +34,18 @@ export default function ConvertPage() {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Online File Converter - Convert PDF, Images & Documents | ConvertHub</title>
+        <meta name="description" content="Convert files between multiple formats. Support for PDF, DOCX, images and more. Free online converter with high quality results." />
+        <meta name="keywords" content="file converter, PDF converter, document converter, image converter, online converter" />
+        <meta property="og:title" content="Online File Converter - ConvertHub" />
+        <meta property="og:description" content="Convert files between multiple formats. PDF, DOCX, images and more supported." />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://converthub.com/convert" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
       <Navbar />
       <main className="flex-grow py-12 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">

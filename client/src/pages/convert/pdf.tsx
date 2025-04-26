@@ -10,12 +10,40 @@ import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 
+import { Helmet } from "react-helmet";
+
 export default function PDFConvertPage() {
   const { user } = useAuth();
   const pdfConversionOptions = getPDFConversionOptions();
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ConvertHub PDF Converter",
+    "applicationCategory": "DocumentManagement",
+    "operatingSystem": "Web",
+    "description": "Convert PDF files to DOCX and other formats. Free online PDF converter that maintains formatting.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>PDF Converter - Convert PDF to DOCX Online Free | ConvertHub</title>
+        <meta name="description" content="Convert PDF files to DOCX and other formats. Free online PDF converter that maintains formatting. Convert PDFs to editable Word documents." />
+        <meta name="keywords" content="PDF converter, PDF to DOCX, PDF to Word, convert PDF, online PDF converter" />
+        <meta property="og:title" content="PDF Converter - ConvertHub" />
+        <meta property="og:description" content="Convert PDF files to DOCX and other formats. Maintain formatting with our free online converter." />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://converthub.com/convert/pdf" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
       <Navbar />
       <main className="flex-grow py-12 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
