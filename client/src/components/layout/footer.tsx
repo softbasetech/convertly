@@ -1,3 +1,4 @@
+
 import { Link } from "wouter";
 import { Edit3, Twitter, Github } from "lucide-react";
 
@@ -27,22 +28,22 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Features</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/convert/pdf">
+                <Link href="/convert/pdf" className="text-gray-300 hover:text-white">
                   PDF Conversion
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/convert/image">
+                <Link href="/convert/image" className="text-gray-300 hover:text-white">
                   Image Conversion
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/convert/doc">
+                <Link href="/convert/doc" className="text-gray-300 hover:text-white">
                   Document Conversion
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/qr-code">
+                <Link href="/qr-code" className="text-gray-300 hover:text-white">
                   QR Code Generator
                 </Link>
               </li>
@@ -52,23 +53,23 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Company</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/about">
-                  About
+                <Link href="/about" className="text-gray-300 hover:text-white">
+                  About Us
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/pricing">
+                <Link href="/contact" className="text-gray-300 hover:text-white">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/pricing" className="text-gray-300 hover:text-white">
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/docs">
+                <Link href="/docs" className="text-gray-300 hover:text-white">
                   Documentation
-                </Link>
-              </li>
-              <li>
-                <Link className="text-gray-300 hover:text-white" href="/contact">
-                  Contact
                 </Link>
               </li>
             </ul>
@@ -77,18 +78,13 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Legal</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/privacy-policy">
+                <Link href="/privacy-policy" className="text-gray-300 hover:text-white">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-300 hover:text-white" href="/terms-of-service">
+                <Link href="/terms-of-service" className="text-gray-300 hover:text-white">
                   Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link className="text-gray-300 hover:text-white" href="/privacy-policy#cookies">
-                  Cookie Policy
                 </Link>
               </li>
             </ul>
