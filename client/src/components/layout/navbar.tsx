@@ -37,7 +37,9 @@ export function Navbar() {
     logoutMutation.mutate();
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string) => {
+    if (!name) return 'U'; // Default fallback for undefined name
+    
     return name
       .split(' ')
       .map(n => n[0])

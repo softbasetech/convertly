@@ -13,6 +13,13 @@ declare global {
     interface User extends IUser {
       id: string;
     }
+    
+    interface Request {
+      isAuthenticated(): boolean;
+      user?: User;
+      login(user: User, callback: (err: any) => void): void;
+      logout(callback: (err: any) => void): void;
+    }
   }
 }
 
