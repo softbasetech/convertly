@@ -19,34 +19,7 @@ import {
   revokeAPIKey as revokeAPIKeyData
 } from './mongodb/data';
 import { nanoid } from 'nanoid';
-import {Schema, model, Document} from 'mongoose';
-
-
-interface IPayment extends Document {
-  id: number;
-  userId: number;
-  amount: number;
-  currency: string;
-  provider: string;
-  providerReference: string;
-  status: 'success' | 'failed';
-  createdAt: Date;
-}
-
-
-const paymentSchema = new Schema<IPayment>({
-  id: { type: Number, required: true, unique: true },
-  userId: { type: Number, required: true },
-  amount: { type: Number, required: true },
-  currency: { type: String, required: true },
-  provider: { type: String, required: true },
-  providerReference: { type: String, required: true, unique: true },
-  status: { type: String, required: true, enum: ['success', 'failed'] },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const Payment = model<IPayment>('Payment', paymentSchema);
-
+import { Payment } from './mongodb/models';
 
 export class MongoDBStorage implements IStorage {
   sessionStore: session.SessionStore;
