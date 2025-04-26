@@ -117,4 +117,17 @@ export type QRCode = typeof qrCodes.$inferSelect;
 export type APIKey = typeof apiKeys.$inferSelect;
 export type LoginData = z.infer<typeof loginSchema>;
 export type RegisterData = z.infer<typeof registerSchema>;
+
+// Contact Form schema
+export const contactForms = pgTable("contact_forms", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertContactFormSchema = createInsertSchema(contactForms);
+export type ContactForm = typeof contactForms.$inferSelect;
+
 export type QRCodeData = z.infer<typeof qrCodeSchema>;

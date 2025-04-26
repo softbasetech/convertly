@@ -77,6 +77,10 @@ export class MemStorage implements IStorage {
   }
 
   // User operations
+
+  // Contact Form operations
+  createContactForm(data: { name: string; email: string; message: string }): Promise<ContactForm>;
+
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }

@@ -147,5 +147,26 @@ export const User: Model<IUser> = mongoose.models.User || model<IUser>('User', U
 export const Conversion: Model<IConversion> = mongoose.models.Conversion || model<IConversion>('Conversion', ConversionSchema);
 export const QRCode: Model<IQRCode> = mongoose.models.QRCode || model<IQRCode>('QRCode', QRCodeSchema);
 export const APIKey: Model<IAPIKey> = mongoose.models.APIKey || model<IAPIKey>('APIKey', APIKeySchema);
+
+// Contact Form Interface
+export interface IContactForm extends Document {
+  id: number;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: Date;
+}
+
+// Contact Form Schema
+const ContactFormSchema = new Schema<IContactForm>({
+  id: { type: Number, required: true, unique: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+export const ContactForm: Model<IContactForm> = mongoose.models.ContactForm || model<IContactForm>('ContactForm', ContactFormSchema);
+
 export const Payment: Model<IPayment> = mongoose.models.Payment || model<IPayment>('Payment', PaymentSchema);
 export const PaystackLog: Model<IPaystackLog> = mongoose.models.PaystackLog || model<IPaystackLog>('PaystackLog', PaystackLogSchema);

@@ -147,6 +147,21 @@ export class MongoDBStorage implements IStorage {
 
     const payment = new Payment({
       ...data,
+
+  async createContactForm(data: { name: string; email: string; message: string }): Promise<IContactForm> {
+    const forms = await ContactForm.find().sort({ id: -1 }).limit(1);
+    const nextId = forms.length > 0 ? forms[0].id + 1 : 1;
+
+    const form = new ContactForm({
+      id: nextId,
+      ...data,
+      createdAt: new Date()
+    });
+
+    await form.save();
+    return form;
+  }
+
       id: nextId,
       createdAt: new Date()
     });
