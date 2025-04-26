@@ -11,6 +11,8 @@ import QRCode from "qrcode";
 import sharp from "sharp";
 import { PDFDocument } from "pdf-lib";
 import { Document, Packer } from "docx";
+import session from "express-session";
+import passport from "passport";
 
 // Check if Stripe API keys are available
 let stripe: Stripe | undefined;
@@ -137,6 +139,23 @@ const cleanupFile = (filePath: string) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up session middleware
+  const sessionSettings: session.SessionOptions = {
+    secret: process.env.SESSION_SECRET || 'fileconversion-secret',
+    resave: false,
+    saveUninitialized: false,
+    store: storage.sessionStore,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production'
+    }
+  };
+
+  app.use(session(sessionSettings));
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   // Set up authentication
   setupAuth(app);
 
