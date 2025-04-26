@@ -77,18 +77,18 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Legal</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link href="/privacy-policy">
-                  <a className="text-gray-300 hover:text-white">Privacy Policy</a>
+                <Link className="text-gray-300 hover:text-white" href="/privacy-policy">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms-of-service">
-                  <a className="text-gray-300 hover:text-white">Terms of Service</a>
+                <Link className="text-gray-300 hover:text-white" href="/terms-of-service">
+                  Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy#cookies">
-                  <a className="text-gray-300 hover:text-white">Cookie Policy</a>
+                <Link className="text-gray-300 hover:text-white" href="/privacy-policy#cookies">
+                  Cookie Policy
                 </Link>
               </li>
             </ul>
