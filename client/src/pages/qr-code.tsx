@@ -1,3 +1,4 @@
+
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -9,12 +10,46 @@ import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
+import { Helmet } from "react-helmet";
 
 export default function QRCodePage() {
   const { user } = useAuth();
   
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>QR Code Generator | ConvertHub - Create Custom QR Codes</title>
+        <meta name="description" content="Generate custom QR codes for URLs, text, or email addresses. Advanced customization options with colors, sizes, and downloadable in multiple formats." />
+        <meta name="keywords" content="qr code generator, qr code creator, custom qr codes, url to qr code, text to qr code, qr code maker" />
+        <meta property="og:title" content="QR Code Generator | ConvertHub" />
+        <meta property="og:description" content="Create professional QR codes with our easy-to-use generator. Customize colors, size, and download in multiple formats." />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/generated-icon.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="QR Code Generator | ConvertHub" />
+        <meta name="twitter:description" content="Generate professional QR codes instantly. Customize and download in multiple formats." />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "ConvertHub QR Code Generator",
+            "applicationCategory": "Utility",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "featureList": [
+              "URL QR Code Generation",
+              "Text QR Code Generation",
+              "Email QR Code Generation",
+              "Custom Colors",
+              "Multiple Download Formats",
+              "Size Customization"
+            ]
+          })}
+        </script>
+      </Helmet>
       <Navbar />
       <main className="flex-grow py-12 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
