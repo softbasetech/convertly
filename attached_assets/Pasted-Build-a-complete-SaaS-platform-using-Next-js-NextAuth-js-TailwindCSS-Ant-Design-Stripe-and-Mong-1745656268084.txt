@@ -1,0 +1,227 @@
+Build a complete SaaS platform using Next.js, NextAuth.js, TailwindCSS, Ant Design, Stripe, and MongoDB.
+The app offers:
+File conversion tools (PDF/Image/Doc conversion).
+
+
+QR Code generator.
+
+
+Paid plan to unlock higher limits and API access.
+
+
+Detailed Functional Requirements
+Pages:
+Homepage: Brief description, featured converters, call-to-action.
+
+
+File Conversion Pages: Upload, convert, download (PDF/Image/Doc converters).
+
+
+QR Generator Page: Create QR code from text/URL.
+
+
+Pricing Page: List Free and Paid tiers.
+Docs: For API documentations.
+
+
+Dashboard (User Area):
+
+
+View conversion history.
+
+
+API keys (for paid users).
+
+
+Profile (update email/password).
+
+
+Login/Signup: OAuth (Google + Email/password).
+
+
+
+Features:
+File Conversion
+Allow users to upload PDF, DOCX, or image files.
+
+
+Convert:
+
+
+PDF ⇄ DOCX
+
+
+Image ⇄ PDF
+
+
+PNG ⇄ JPG ⇄ WebP
+
+
+Limit free users: 5 conversions/day.
+
+
+Allow bulk conversion for paid users.
+
+
+QR Code Generator
+Generate QR from text, URL, or email.
+
+
+Download QR as PNG/SVG.
+
+
+Save generated QR codes to user dashboard (for logged-in users).
+
+
+Authentication
+Use NextAuth.js:
+
+
+Email/password auth
+
+
+Google OAuth
+
+
+JWT tokens for sessions.
+
+
+Payments
+Stripe Checkout for subscription.
+
+
+Monthly subscription plan:
+
+
+Unlock unlimited conversions.
+
+
+Access private API.
+
+
+User Dashboard
+Show:
+
+
+Total conversions done
+
+
+API usage stats
+
+
+Subscription status
+
+
+API Key Management:
+
+
+Generate/Revoke API keys.
+
+
+Admin Panel (Simple)
+View all users
+
+
+View subscriptions
+
+
+Manage limits (optional)
+Tech Stack & Libraries
+Frontend:
+Next.js (App Router) structure
+
+
+TailwindCSS for layout
+
+
+Ant Design for UI components (buttons, tables, modals)
+
+
+Backend:
+Next.js API Routes for:
+
+
+File upload
+
+
+File conversion (server-side processing)
+
+
+QR Code generation
+
+
+Stripe webhooks
+
+
+Use sharp for image processing
+
+
+Use pdf-lib and pdf-parse for PDF handling
+
+
+Use docx for DOCX conversions
+
+
+Use node-qrcode for QR generation
+
+
+Authentication:
+NextAuth.js with MongoDB adapter.
+
+
+Database:
+MongoDB collections:
+
+
+users
+
+
+conversions
+
+
+qr_codes
+
+
+subscriptions
+
+
+api_keys
+
+
+Payments:
+Stripe: setup Products, Prices, Webhooks
+
+
+Create subscription portal with Stripe Customer Portal.
+
+
+Security Requirements
+Sanitize uploaded files.
+
+
+Set file size limits (e.g., 10MB for free, 100MB for paid).
+
+
+Auto-delete files after processing.
+
+
+Validate API key usage on API endpoints.
+
+
+Final Deliverables
+Full stack SaaS platform.
+
+
+Clean, maintainable code.
+
+
+Responsive mobile-first design.
+
+
+Stripe billing live-ready.
+
+
+Fully working QR generator and file converter tools.
+
+
+API docs for paid users.
