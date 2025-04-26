@@ -19,6 +19,34 @@ import {
   revokeAPIKey as revokeAPIKeyData
 } from './mongodb/data';
 import { nanoid } from 'nanoid';
+import {Schema, model, Document} from 'mongoose';
+
+
+interface IPayment extends Document {
+  id: number;
+  userId: number;
+  amount: number;
+  currency: string;
+  provider: string;
+  providerReference: string;
+  status: 'success' | 'failed';
+  createdAt: Date;
+}
+
+
+const paymentSchema = new Schema<IPayment>({
+  id: { type: Number, required: true, unique: true },
+  userId: { type: Number, required: true },
+  amount: { type: Number, required: true },
+  currency: { type: String, required: true },
+  provider: { type: String, required: true },
+  providerReference: { type: String, required: true, unique: true },
+  status: { type: String, required: true, enum: ['success', 'failed'] },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Payment = model<IPayment>('Payment', paymentSchema);
+
 
 export class MongoDBStorage implements IStorage {
   sessionStore: session.SessionStore;
@@ -124,11 +152,8 @@ export class MongoDBStorage implements IStorage {
   }
 
   // Stripe operations
-  async updateUserStripeInfo(userId: number, info: { stripeCustomerId: string, stripeSubscriptionId: string }): Promise<IUser> {
-    const user = await updateUserAuth(userId.toString(), {
-      stripeCustomerId: info.stripeCustomerId,
-      stripeSubscriptionId: info.stripeSubscriptionId
-    });
+  async updateUserStripeInfo(userId: number, info: { stripeCustomerId?: string | null, stripeSubscriptionId?: string | null }): Promise<IUser> {
+    const user = await updateUserAuth(userId.toString(), info);
     if (!user) {
       throw new Error('User not found');
     }
@@ -141,5 +166,26 @@ export class MongoDBStorage implements IStorage {
       throw new Error('User not found');
     }
     return user;
+  }
+
+  async createPayment(data: Omit<IPayment, 'id' | 'createdAt'>): Promise<IPayment> {
+    const payments = await Payment.find().sort({ id: -1 }).limit(1);
+    const nextId = payments.length > 0 ? payments[0].id + 1 : 1;
+
+    const payment = new Payment({
+      ...data,
+      id: nextId,
+      createdAt: new Date()
+    });
+
+    await payment.save();
+    return payment;
+  }
+
+  async updatePaymentStatus(reference: string, status: 'success' | 'failed'): Promise<void> {
+    await Payment.findOneAndUpdate(
+      { providerReference: reference },
+      { status }
+    );
   }
 }

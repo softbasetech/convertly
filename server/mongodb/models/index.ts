@@ -100,8 +100,35 @@ const APIKeySchema = new Schema<IAPIKey>({
   createdAt: { type: Date, default: Date.now }
 });
 
+// Payment Model Interface
+export interface IPayment extends Document {
+  id: number;
+  userId: number;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'success' | 'failed';
+  provider: string;
+  providerReference: string;
+  metadata: Record<string, any>;
+  createdAt: Date;
+}
+
+// Payment Schema
+const PaymentSchema = new Schema<IPayment>({
+  id: { type: Number, required: true, unique: true },
+  userId: { type: Number, required: true },
+  amount: { type: Number, required: true },
+  currency: { type: String, required: true },
+  status: { type: String, required: true },
+  provider: { type: String, required: true },
+  providerReference: { type: String, required: true },
+  metadata: { type: Schema.Types.Mixed },
+  createdAt: { type: Date, default: Date.now }
+});
+
 // Define models or get them if they already exist
 export const User: Model<IUser> = mongoose.models.User || model<IUser>('User', UserSchema);
 export const Conversion: Model<IConversion> = mongoose.models.Conversion || model<IConversion>('Conversion', ConversionSchema);
 export const QRCode: Model<IQRCode> = mongoose.models.QRCode || model<IQRCode>('QRCode', QRCodeSchema);
 export const APIKey: Model<IAPIKey> = mongoose.models.APIKey || model<IAPIKey>('APIKey', APIKeySchema);
+export const Payment: Model<IPayment> = mongoose.models.Payment || model<IPayment>('Payment', PaymentSchema);

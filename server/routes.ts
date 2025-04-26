@@ -608,16 +608,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         // Initialize Paystack transaction
-        const amount = 999; // Amount in lowest currency unit (e.g., kobo, cents)
+        const amount = 14552; // GHS 145.52 in pesewas (smallest GHS unit)
         const email = user.email;
 
         const response = await paystack.transaction.initialize({
           email,
           amount,
+          currency: 'GHS',
           callback_url: `${process.env.APP_URL || req.headers.origin}/dashboard/subscription?success=true`,
           metadata: {
             userId: user.id,
             customerId
+          }
+        });
+
+        // Record the payment attempt
+        const payment = await storage.createPayment({
+          userId: user.id,
+          amount: 14552,
+          currency: 'GHS',
+          status: 'pending',
+          provider: 'paystack',
+          providerReference: response.data.reference,
+          metadata: {
+            customerId,
+            subscriptionType: 'pro'
           }
         });
 
