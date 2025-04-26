@@ -607,15 +607,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customerId = customer.id;
         }
 
-        // Create Paystack subscription
-        const plan = process.env.PAYSTACK_PLAN_ID || (() => { throw new Error("PAYSTACK_PLAN_ID environment variable is not configured") })();
+        // Initialize Paystack transaction
+        const amount = 999; // Amount in lowest currency unit (e.g., kobo, cents)
+        const email = user.email;
 
-        const subscription = await paystack.subscription.create({ //This line was changed
-          customer: customerId,
-          plan: plan,
-          authorization: req.body.authorization_code
+        const response = await paystack.transaction.initialize({
+          email,
+          amount,
+          callback_url: `${process.env.APP_URL || req.headers.origin}/dashboard/subscription?success=true`,
+          metadata: {
+            userId: user.id,
+            customerId
+          }
         });
-
 
         // Update user with Stripe info
         await storage.updateUserStripeInfo(user.id, {

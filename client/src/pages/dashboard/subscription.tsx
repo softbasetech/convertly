@@ -136,8 +136,16 @@ export default function SubscriptionPage() {
       return await res.json();
     },
     onSuccess: (data) => {
-      setClientSecret(data.clientSecret);
-      setIsUpgrading(true);
+      if (data.authorization_url) {
+        // Redirect to Paystack payment page
+        window.location.href = data.authorization_url;
+      } else {
+        toast({
+          title: "Payment initialization failed",
+          description: "Could not initialize payment",
+          variant: "destructive",
+        });
+      }
     },
     onError: (error: Error) => {
       toast({
