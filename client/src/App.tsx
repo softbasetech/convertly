@@ -23,13 +23,20 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import AboutPage from "@/pages/about"; // Added import
+import ContactPage from "@/pages/contact";
 import PrivacyPolicyPage from "@/pages/privacy-policy"; // Added import
 import TermsOfServicePage from "@/pages/terms-of-service"; // Added import
 
-
 function Router() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
       <Switch>
         {/* Public pages */}
         <Route path="/" component={HomePage} />
@@ -44,10 +51,16 @@ function Router() {
 
         {/* Protected dashboard routes */}
         <ProtectedRoute path="/dashboard" component={DashboardPage} />
-        <ProtectedRoute path="/dashboard/conversions" component={ConversionsPage} />
+        <ProtectedRoute
+          path="/dashboard/conversions"
+          component={ConversionsPage}
+        />
         <ProtectedRoute path="/dashboard/api-keys" component={APIKeysPage} />
         <ProtectedRoute path="/dashboard/profile" component={ProfilePage} />
-        <ProtectedRoute path="/dashboard/subscription" component={SubscriptionPage} />
+        <ProtectedRoute
+          path="/dashboard/subscription"
+          component={SubscriptionPage}
+        />
 
         <Route path="/privacy-policy" component={PrivacyPolicyPage} />
         <Route path="/terms-of-service" component={TermsOfServicePage} />
