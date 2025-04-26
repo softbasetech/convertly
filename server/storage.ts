@@ -248,5 +248,18 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Initialize storage
-export const storage = new MemStorage();
+// Import MongoDB storage
+import { MongoDBStorage } from './mongodb-storage';
+
+// Initialize storage based on environment
+let storageImplementation: IStorage;
+
+if (process.env.MONGODB_URI) {
+  console.log('Using MongoDB storage');
+  storageImplementation = new MongoDBStorage();
+} else {
+  console.log('Using in-memory storage');
+  storageImplementation = new MemStorage();
+}
+
+export const storage = storageImplementation;
