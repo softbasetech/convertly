@@ -64,69 +64,67 @@ export default function PricingPage() {
               Choose the plan that works for you. Start with our free tier and upgrade when you need more.
             </p>
             
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8">
               <Tabs
                 defaultValue="monthly"
                 value={billingCycle}
                 onValueChange={setBillingCycle}
-                className="w-full max-w-md"
+                className="w-full"
               >
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="max-w-md mx-auto grid w-full grid-cols-2 mb-8">
                   <TabsTrigger value="monthly">Monthly</TabsTrigger>
                   <TabsTrigger value="annual">Annual (Save 20%)</TabsTrigger>
                 </TabsList>
+                
+                <TabsContent value="monthly">
+                  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <PricingCard
+                      title="Free"
+                      price="$0"
+                      description="Perfect for occasional use and small projects."
+                      features={freeFeatures}
+                      buttonText="Sign Up Free"
+                      buttonLink="/auth"
+                      buttonVariant="outline"
+                    />
+                    
+                    <PricingCard
+                      title="Pro"
+                      price="$9.99"
+                      description="For professionals and teams with higher needs."
+                      features={proFeatures}
+                      buttonText="Get Started"
+                      buttonLink="/auth?plan=pro"
+                      popular={true}
+                    />
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="annual">
+                  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <PricingCard
+                      title="Free"
+                      price="$0"
+                      description="Perfect for occasional use and small projects."
+                      features={freeFeatures}
+                      buttonText="Sign Up Free"
+                      buttonLink="/auth"
+                      buttonVariant="outline"
+                    />
+                    
+                    <PricingCard
+                      title="Pro"
+                      price="$7.99"
+                      description="For professionals and teams with higher needs."
+                      features={proFeatures}
+                      buttonText="Get Started"
+                      buttonLink="/auth?plan=pro-annual"
+                      popular={true}
+                    />
+                  </div>
+                </TabsContent>
               </Tabs>
             </div>
-          </div>
-          
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-            <TabsContent value="monthly" className="col-span-full">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <PricingCard
-                  title="Free"
-                  price="$0"
-                  description="Perfect for occasional use and small projects."
-                  features={freeFeatures}
-                  buttonText="Sign Up Free"
-                  buttonLink="/auth"
-                  buttonVariant="outline"
-                />
-                
-                <PricingCard
-                  title="Pro"
-                  price="$9.99"
-                  description="For professionals and teams with higher needs."
-                  features={proFeatures}
-                  buttonText="Get Started"
-                  buttonLink="/auth?plan=pro"
-                  popular={true}
-                />
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="annual" className="col-span-full">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <PricingCard
-                  title="Free"
-                  price="$0"
-                  description="Perfect for occasional use and small projects."
-                  features={freeFeatures}
-                  buttonText="Sign Up Free"
-                  buttonLink="/auth"
-                  buttonVariant="outline"
-                />
-                
-                <PricingCard
-                  title="Pro"
-                  price="$7.99"
-                  description="For professionals and teams with higher needs."
-                  features={proFeatures}
-                  buttonText="Get Started"
-                  buttonLink="/auth?plan=pro-annual"
-                  popular={true}
-                />
-              </div>
-            </TabsContent>
           </div>
           
           <div className="mt-24 max-w-3xl mx-auto">
