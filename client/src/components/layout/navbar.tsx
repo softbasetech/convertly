@@ -55,30 +55,20 @@ export function Navbar() {
               <span className="text-xl font-bold">ConvertHub</span>
             </Link>
             <nav className="ml-10 hidden md:flex items-center space-x-6">
-              <Link href="/">
-                <a className={`text-gray-900 hover:text-primary font-medium ${location === "/" ? "text-primary" : ""}`}>
-                  Home
-                </a>
+              <Link href="/" className={`text-gray-900 hover:text-primary font-medium ${location === "/" ? "text-primary" : ""}`}>
+                Home
               </Link>
-              <Link href="/convert">
-                <a className={`text-gray-900 hover:text-primary font-medium ${location.startsWith("/convert") ? "text-primary" : ""}`}>
-                  Convert
-                </a>
+              <Link href="/convert" className={`text-gray-900 hover:text-primary font-medium ${location.startsWith("/convert") ? "text-primary" : ""}`}>
+                Convert
               </Link>
-              <Link href="/qr-code">
-                <a className={`text-gray-900 hover:text-primary font-medium ${location === "/qr-code" ? "text-primary" : ""}`}>
-                  QR Code
-                </a>
+              <Link href="/qr-code" className={`text-gray-900 hover:text-primary font-medium ${location === "/qr-code" ? "text-primary" : ""}`}>
+                QR Code
               </Link>
-              <Link href="/pricing">
-                <a className={`text-gray-900 hover:text-primary font-medium ${location === "/pricing" ? "text-primary" : ""}`}>
-                  Pricing
-                </a>
+              <Link href="/pricing" className={`text-gray-900 hover:text-primary font-medium ${location === "/pricing" ? "text-primary" : ""}`}>
+                Pricing
               </Link>
-              <Link href="/docs">
-                <a className={`text-gray-900 hover:text-primary font-medium ${location === "/docs" ? "text-primary" : ""}`}>
-                  Docs
-                </a>
+              <Link href="/docs" className={`text-gray-900 hover:text-primary font-medium ${location === "/docs" ? "text-primary" : ""}`}>
+                Docs
               </Link>
             </nav>
           </div>
@@ -110,45 +100,35 @@ export function Navbar() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard">
-                        <a className="flex items-center cursor-pointer w-full">
-                          <Home className="mr-2 h-4 w-4" />
-                          <span>Dashboard</span>
-                        </a>
+                      <Link href="/dashboard" className="flex items-center cursor-pointer w-full">
+                        <Home className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/conversions">
-                        <a className="flex items-center cursor-pointer w-full">
-                          <RefreshCw className="mr-2 h-4 w-4" />
-                          <span>Conversions</span>
-                        </a>
+                      <Link href="/dashboard/conversions" className="flex items-center cursor-pointer w-full">
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        <span>Conversions</span>
                       </Link>
                     </DropdownMenuItem>
                     {user.isPro && (
                       <DropdownMenuItem asChild>
-                        <Link href="/dashboard/api-keys">
-                          <a className="flex items-center cursor-pointer w-full">
-                            <QrCode className="mr-2 h-4 w-4" />
-                            <span>API Keys</span>
-                          </a>
+                        <Link href="/dashboard/api-keys" className="flex items-center cursor-pointer w-full">
+                          <QrCode className="mr-2 h-4 w-4" />
+                          <span>API Keys</span>
                         </Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/profile">
-                        <a className="flex items-center cursor-pointer w-full">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Profile</span>
-                        </a>
+                      <Link href="/dashboard/profile" className="flex items-center cursor-pointer w-full">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/subscription">
-                        <a className="flex items-center cursor-pointer w-full">
-                          <CreditCard className="mr-2 h-4 w-4" />
-                          <span>Subscription</span>
-                        </a>
+                      <Link href="/dashboard/subscription" className="flex items-center cursor-pointer w-full">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        <span>Subscription</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -183,30 +163,20 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="md:hidden border-t border-gray-200">
           <div className="container mx-auto px-4 py-3 space-y-1">
-            <Link href="/">
-              <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
-                Home
-              </a>
+            <Link href="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              Home
             </Link>
-            <Link href="/convert">
-              <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
-                Convert
-              </a>
+            <Link href="/convert" className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              Convert
             </Link>
-            <Link href="/qr-code">
-              <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
-                QR Code
-              </a>
+            <Link href="/qr-code" className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              QR Code
             </Link>
-            <Link href="/pricing">
-              <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
-                Pricing
-              </a>
+            <Link href="/pricing" className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              Pricing
             </Link>
-            <Link href="/docs">
-              <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
-                Docs
-              </a>
+            <Link href="/docs" className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              Docs
             </Link>
             
             {!user && (
@@ -238,20 +208,14 @@ export function Navbar() {
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
-                  <Link href="/dashboard">
-                    <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
-                      Dashboard
-                    </a>
+                  <Link href="/dashboard" className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+                    Dashboard
                   </Link>
-                  <Link href="/dashboard/profile">
-                    <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
-                      Profile
-                    </a>
+                  <Link href="/dashboard/profile" className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+                    Profile
                   </Link>
-                  <Link href="/dashboard/subscription">
-                    <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
-                      Subscription
-                    </a>
+                  <Link href="/dashboard/subscription" className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+                    Subscription
                   </Link>
                   <button
                     onClick={handleLogout}
