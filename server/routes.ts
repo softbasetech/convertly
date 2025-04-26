@@ -13,7 +13,10 @@ import { PDFDocument } from "pdf-lib";
 import { Document, Packer } from "docx";
 import session from "express-session";
 import passport from "passport";
-import paystack from 'paystack' // Added Paystack import
+import Paystack from '@paystack/paystack-sdk';
+
+// Initialize Paystack
+const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY || '');
 
 // Check if Stripe API keys are available
 let stripe: Stripe | undefined;
