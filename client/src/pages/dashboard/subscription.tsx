@@ -265,22 +265,55 @@ export default function SubscriptionPage() {
                         </Badge>
                       )}
                     </div>
-                    <p className="text-muted-foreground">
-                      {user?.isPro 
-                        ? "Unlimited conversions, API access, and premium features"
-                        : "Limited to 5 conversions per day, 10MB file size limit"
-                      }
-                    </p>
-                    
-                    {user?.isPro && subscriptionData?.subscription && (
-                      <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                        <Clock className="mr-1 h-4 w-4" />
-                        {subscriptionData.subscription.cancelAtPeriodEnd 
-                          ? "Your subscription will end on "
-                          : "Next billing date: "
-                        }
-                        {formatDate(new Date(subscriptionData.subscription.currentPeriodEnd))}
+                    {user?.isPro ? (
+                      <div className="space-y-3">
+                        <p className="text-muted-foreground">
+                          You have access to all premium features including:
+                        </p>
+                        <ul className="space-y-2">
+                          <li className="flex items-center text-sm text-muted-foreground">
+                            <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                            Unlimited file conversions
+                          </li>
+                          <li className="flex items-center text-sm text-muted-foreground">
+                            <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                            100MB file size limit
+                          </li>
+                          <li className="flex items-center text-sm text-muted-foreground">
+                            <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                            Priority conversion quality
+                          </li>
+                          <li className="flex items-center text-sm text-muted-foreground">
+                            <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                            Advanced QR code customization
+                          </li>
+                          <li className="flex items-center text-sm text-muted-foreground">
+                            <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                            Full API access
+                          </li>
+                        </ul>
+                        
+                        {subscriptionData?.subscription && (
+                          <div className="pt-2 space-y-2">
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <CreditCard className="h-4 w-4 mr-2" />
+                              Amount: GHS 145.52/month
+                            </div>
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <Clock className="h-4 w-4 mr-2" />
+                              {subscriptionData.subscription.cancelAtPeriodEnd 
+                                ? "Your subscription will end on "
+                                : "Next billing date: "
+                              }
+                              {formatDate(new Date(subscriptionData.subscription.currentPeriodEnd))}
+                            </div>
+                          </div>
+                        )}
                       </div>
+                    ) : (
+                      <p className="text-muted-foreground">
+                        Limited to 5 conversions per day, 10MB file size limit
+                      </p>
                     )}
                   </div>
                   
