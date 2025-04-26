@@ -23,6 +23,9 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import PrivacyPolicyPage from "@/pages/privacy-policy"; // Added import
+import TermsOfServicePage from "@/pages/terms-of-service"; // Added import
+
 
 function Router() {
   return (
@@ -38,14 +41,17 @@ function Router() {
         <Route path="/qr-code" component={QRCodePage} />
         <Route path="/pricing" component={PricingPage} />
         <Route path="/docs" component={DocsPage} />
-        
+
         {/* Protected dashboard routes */}
         <ProtectedRoute path="/dashboard" component={DashboardPage} />
         <ProtectedRoute path="/dashboard/conversions" component={ConversionsPage} />
         <ProtectedRoute path="/dashboard/api-keys" component={APIKeysPage} />
         <ProtectedRoute path="/dashboard/profile" component={ProfilePage} />
         <ProtectedRoute path="/dashboard/subscription" component={SubscriptionPage} />
-        
+
+        <Route path="/privacy-policy" component={PrivacyPolicyPage} />
+        <Route path="/terms-of-service" component={TermsOfServicePage} />
+
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>

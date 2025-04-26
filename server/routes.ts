@@ -573,7 +573,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Stripe payment routes
   if (stripe) {
-    app.post("/api/create-subscription", isAuthenticated, async (req, res) => {
+    app.post("/api/subscriptions/cancel", isAuthenticated, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.user!.id);
+      if (!user || !user.isPro) {
+        return res.status(400).json({ message: "No active subscription" });
+      }
+
+      // Cancel subscription in Paystack
+      const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY!);
+      await paystack.subscription.disable({
+        code: user.stripeSubscriptionId!, 
+        token: user.stripeCustomerId!
+      });
+
+      // Update user status (subscription remains active until end of period)
+      await storage.updateUser(user.id, {
+        isPro: false,
+        stripeSubscriptionId: null,
+        stripeCustomerId: null
+      });
+
+      res.json({ message: "Subscription cancelled successfully" });
+    } catch (error) {
+      console.error("Error cancelling subscription:", error);
+      res.status(500).json({ message: "Failed to cancel subscription" });
+    }
+  });
+
+  app.post("/api/create-subscription", isAuthenticated, async (req, res) => {
       try {
         const user = req.user;
 
