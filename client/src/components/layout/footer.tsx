@@ -27,23 +27,23 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Features</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link href="/convert/pdf">
-                  <a className="text-gray-300 hover:text-white">PDF Conversion</a>
+                <Link className="text-gray-300 hover:text-white" href="/convert/pdf">
+                  PDF Conversion
                 </Link>
               </li>
               <li>
-                <Link href="/convert/image">
-                  <a className="text-gray-300 hover:text-white">Image Conversion</a>
+                <Link className="text-gray-300 hover:text-white" href="/convert/image">
+                  Image Conversion
                 </Link>
               </li>
               <li>
-                <Link href="/convert/doc">
-                  <a className="text-gray-300 hover:text-white">Document Conversion</a>
+                <Link className="text-gray-300 hover:text-white" href="/convert/doc">
+                  Document Conversion
                 </Link>
               </li>
               <li>
-                <Link href="/qr-code">
-                  <a className="text-gray-300 hover:text-white">QR Code Generator</a>
+                <Link className="text-gray-300 hover:text-white" href="/qr-code">
+                  QR Code Generator
                 </Link>
               </li>
             </ul>
@@ -52,23 +52,23 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Company</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link href="/">
-                  <a className="text-gray-300 hover:text-white">About</a>
+                <Link className="text-gray-300 hover:text-white" href="/about">
+                  About
                 </Link>
               </li>
               <li>
-                <Link href="/pricing">
-                  <a className="text-gray-300 hover:text-white">Pricing</a>
+                <Link className="text-gray-300 hover:text-white" href="/pricing">
+                  Pricing
                 </Link>
               </li>
               <li>
-                <Link href="/docs">
-                  <a className="text-gray-300 hover:text-white">Documentation</a>
+                <Link className="text-gray-300 hover:text-white" href="/docs">
+                  Documentation
                 </Link>
               </li>
               <li>
-                <Link href="/">
-                  <a className="text-gray-300 hover:text-white">Contact</a>
+                <Link className="text-gray-300 hover:text-white" href="/contact">
+                  Contact
                 </Link>
               </li>
             </ul>

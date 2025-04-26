@@ -51,6 +51,8 @@ function Router() {
 
         <Route path="/privacy-policy" component={PrivacyPolicyPage} />
         <Route path="/terms-of-service" component={TermsOfServicePage} />
+        <Route path="/about" component={AboutPage} />
+        <Route path="/contact" component={ContactPage} />
 
         {/* Fallback to 404 */}
         <Route component={NotFound} />
