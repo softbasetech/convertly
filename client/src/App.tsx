@@ -1,9 +1,11 @@
+
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
+import { Helmet } from "react-helmet";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
@@ -23,10 +25,10 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
-import AboutPage from "@/pages/about"; // Added import
+import AboutPage from "@/pages/about";
 import ContactPage from "@/pages/contact";
-import PrivacyPolicyPage from "@/pages/privacy-policy"; // Added import
-import TermsOfServicePage from "@/pages/terms-of-service"; // Added import
+import PrivacyPolicyPage from "@/pages/privacy-policy";
+import TermsOfServicePage from "@/pages/terms-of-service";
 
 function Router() {
   return (
@@ -37,6 +39,44 @@ function Router() {
         </div>
       }
     >
+      <Helmet>
+        <title>ConvertHub - File Conversion & QR Code Generator</title>
+        <meta name="description" content="Convert files between formats, generate QR codes, and more. All in one intuitive platform." />
+        <meta name="keywords" content="file conversion, PDF converter, image converter, QR code generator, document conversion" />
+        <meta name="author" content="ConvertHub" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="ConvertHub - File Conversion & QR Code Generator" />
+        <meta property="og:description" content="Convert files between formats, generate QR codes, and more. All in one intuitive platform." />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/generated-icon.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="ConvertHub - File Conversion & QR Code Generator" />
+        <meta name="twitter:description" content="Convert files between formats, generate QR codes, and more. All in one intuitive platform." />
+        <link rel="canonical" href="https://converthub.com" />
+        
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "ConvertHub",
+            "description": "All-in-one file conversion and QR code generation platform",
+            "applicationCategory": "Utility",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "features": [
+              "File conversion",
+              "QR code generation",
+              "PDF conversion",
+              "Image conversion",
+              "Document conversion"
+            ]
+          })}
+        </script>
+      </Helmet>
+
       <Switch>
         {/* Public pages */}
         <Route path="/" component={HomePage} />
