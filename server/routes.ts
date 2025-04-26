@@ -714,6 +714,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
+  // Paystack webhook
+  app.post("/api/paystack-webhook", async (req, res) => {
+    const hash = crypto.createHmac('sha512', process.env.PAYSTACK_SECRET_KEY || '')
+                      .update(JSON.stringify(req.body))
+                      .digest('hex');
+
+    if (hash !== req.headers['x-paystack-signature']) {
+      return res.status(400).send('Invalid signature');
+    }
+
+    const event = req.body;
+
+    // Log the webhook
+    const logs = await PaystackLog.find().sort({ id: -1 }).limit(1);
+    const nextId = logs.length > 0 ? logs[0].id + 1 : 1;
+    
+    await new PaystackLog({
+      id: nextId,
+      event: event.event,
+      data: event.data
+    }).save();
+
+    // Handle successful charge
+    if (event.event === 'charge.success') {
+      const reference = event.data.reference;
+      const payment = await Payment.findOne({ providerReference: reference });
+
+      if (payment) {
+        // Update payment status
+        await storage.updatePaymentStatus(reference, 'success');
+
+        // Update user subscription status
+        if (payment.metadata?.subscriptionType === 'pro') {
+          await storage.updateUserSubscriptionStatus(payment.userId, true);
+        }
+      }
+    }
+
+    res.sendStatus(200);
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

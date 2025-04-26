@@ -127,8 +127,25 @@ const PaymentSchema = new Schema<IPayment>({
 });
 
 // Define models or get them if they already exist
+// PaystackLog Interface
+export interface IPaystackLog extends Document {
+  id: number;
+  event: string;
+  data: Record<string, any>;
+  createdAt: Date;
+}
+
+// PaystackLog Schema
+const PaystackLogSchema = new Schema<IPaystackLog>({
+  id: { type: Number, required: true, unique: true },
+  event: { type: String, required: true },
+  data: { type: Schema.Types.Mixed, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
 export const User: Model<IUser> = mongoose.models.User || model<IUser>('User', UserSchema);
 export const Conversion: Model<IConversion> = mongoose.models.Conversion || model<IConversion>('Conversion', ConversionSchema);
 export const QRCode: Model<IQRCode> = mongoose.models.QRCode || model<IQRCode>('QRCode', QRCodeSchema);
 export const APIKey: Model<IAPIKey> = mongoose.models.APIKey || model<IAPIKey>('APIKey', APIKeySchema);
 export const Payment: Model<IPayment> = mongoose.models.Payment || model<IPayment>('Payment', PaymentSchema);
+export const PaystackLog: Model<IPaystackLog> = mongoose.models.PaystackLog || model<IPaystackLog>('PaystackLog', PaystackLogSchema);
