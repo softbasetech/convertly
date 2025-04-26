@@ -13,6 +13,7 @@ import { PDFDocument } from "pdf-lib";
 import { Document, Packer } from "docx";
 import session from "express-session";
 import passport from "passport";
+import paystack from 'paystack' // Added Paystack import
 
 // Check if Stripe API keys are available
 let stripe: Stripe | undefined;
@@ -603,17 +604,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customerId = customer.id;
         }
 
-        // Create subscription
-        const subscription = await stripe.subscriptions.create({
+        // Create Paystack subscription
+        const plan = process.env.PAYSTACK_PLAN_ID || (() => { throw new Error("PAYSTACK_PLAN_ID environment variable is not configured") })();
+
+        const subscription = await paystack.subscription.create({ //This line was changed
           customer: customerId,
-          items: [
-            {
-              price: process.env.STRIPE_PRICE_ID || (() => { throw new Error("STRIPE_PRICE_ID environment variable is not configured") })(),
-            },
-          ],
-          payment_behavior: "default_incomplete",
-          expand: ["latest_invoice.payment_intent"],
+          plan: plan,
+          authorization: req.body.authorization_code
         });
+
 
         // Update user with Stripe info
         await storage.updateUserStripeInfo(user.id, {
