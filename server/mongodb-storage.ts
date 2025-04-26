@@ -147,6 +147,13 @@ export class MongoDBStorage implements IStorage {
 
     const payment = new Payment({
       ...data,
+      id: nextId,
+      createdAt: new Date()
+    });
+
+    await payment.save();
+    return payment;
+  }
 
   async createContactForm(data: { name: string; email: string; message: string }): Promise<IContactForm> {
     const forms = await ContactForm.find().sort({ id: -1 }).limit(1);
@@ -160,14 +167,6 @@ export class MongoDBStorage implements IStorage {
 
     await form.save();
     return form;
-  }
-
-      id: nextId,
-      createdAt: new Date()
-    });
-
-    await payment.save();
-    return payment;
   }
 
   async updatePaymentStatus(reference: string, status: 'success' | 'failed'): Promise<void> {
