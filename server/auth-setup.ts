@@ -1,18 +1,13 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Express, Request } from 'express';
+import { Express } from 'express';
 import session from 'express-session';
+import { storage } from './storage';
 import { connectToDatabase } from './mongodb/connect';
-import { 
-  getUserById, getUserByUsername, getUserByEmail, getUserByGoogleId,
-  comparePasswords, hashPassword, createUser
-} from './mongodb/auth';
+import { comparePasswords, hashPassword, getUserById } from './mongodb/auth';
 import { IUser } from './mongodb/models';
-import { nanoid } from 'nanoid';
-import MongoStore from 'connect-mongo';
 
-// Type augmentation for Express.User
 declare global {
   namespace Express {
     interface User extends IUser {
@@ -26,178 +21,182 @@ export async function setupAuth(app: Express) {
   await connectToDatabase();
 
   // Session configuration
-  const sessionConfig: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || nanoid(32),
+  const sessionSettings: session.SessionOptions = {
+    secret: process.env.SESSION_SECRET || 'fileconversion-secret',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      collectionName: 'sessions',
-    }),
+    store: storage.sessionStore,
     cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production'
     }
   };
 
-  app.use(session(sessionConfig));
+  app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Local Strategy
-  passport.use(new LocalStrategy(async (username, password, done) => {
-    try {
-      // Check if input is email or username
-      const isEmail = username.includes('@');
-      
-      let user;
-      if (isEmail) {
-        user = await getUserByEmail(username);
-      } else {
-        user = await getUserByUsername(username);
-      }
-      
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username or email.' });
-      }
-      
-      const isPasswordValid = await comparePasswords(password, user.password);
-      if (!isPasswordValid) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      
-      return done(null, user);
-    } catch (error) {
-      return done(error);
-    }
-  }));
-
-  // Google Strategy (if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are defined)
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    passport.use(new GoogleStrategy({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: '/auth/google/callback',
-      scope: ['profile', 'email']
-    }, async (accessToken, refreshToken, profile, done) => {
+  // Local Strategy (username/password)
+  passport.use(new LocalStrategy(
+    async (username, password, done) => {
       try {
-        const googleId = profile.id;
-        const email = profile.emails?.[0]?.value;
-        
-        if (!email) {
-          return done(new Error('Email not found from Google profile.'));
-        }
-        
-        // Find existing user by Google ID or email
-        let user = await getUserByGoogleId(googleId);
+        // Try to find user by username
+        const user = await storage.getUserByUsername(username);
         
         if (!user) {
-          // Check if user exists with the same email
-          user = await getUserByEmail(email);
-          
-          if (user) {
-            // Update existing user with Google ID
-            user.googleId = googleId;
-            await user.save();
-          } else {
-            // Create new user
-            const displayName = profile.displayName || `${profile.name?.givenName || ''} ${profile.name?.familyName || ''}`.trim();
-            const username = email.split('@')[0] + nanoid(5);
-            
-            user = await createUser({
-              username,
-              email,
-              password: await hashPassword(nanoid(16)), // Random password
-              displayName,
-              googleId,
-              isPro: false,
-              dailyConversionsLeft: 5
-            });
-            
-            if (!user) {
-              return done(new Error('Failed to create user.'));
-            }
+          // If no user found, try by email
+          const userByEmail = await storage.getUserByEmail(username);
+          if (!userByEmail) {
+            return done(null, false, { message: 'Invalid username or password' });
           }
+          
+          // Check password
+          if (!(await comparePasswords(password, userByEmail.password))) {
+            return done(null, false, { message: 'Invalid username or password' });
+          }
+          
+          return done(null, userByEmail);
+        }
+        
+        // Check password
+        if (!(await comparePasswords(password, user.password))) {
+          return done(null, false, { message: 'Invalid username or password' });
         }
         
         return done(null, user);
       } catch (error) {
         return done(error);
       }
-    }));
+    }
+  ));
+
+  // Google OAuth Strategy
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL: '/auth/google/callback',
+          scope: ['profile', 'email']
+        },
+        async (accessToken, refreshToken, profile, done) => {
+          try {
+            // Check if user exists
+            const existingUser = await storage.getUserByGoogleId(profile.id);
+            
+            if (existingUser) {
+              return done(null, existingUser);
+            }
+            
+            // Create new user if none exists
+            const email = profile.emails?.[0]?.value;
+            if (!email) {
+              return done(new Error('No email provided by Google'));
+            }
+            
+            // Check if email is already registered
+            const userWithEmail = await storage.getUserByEmail(email);
+            if (userWithEmail) {
+              // Update existing user with Google ID
+              const updatedUser = await storage.updateUser(userWithEmail.id, {
+                googleId: profile.id,
+                displayName: profile.displayName || userWithEmail.displayName
+              });
+              
+              return done(null, updatedUser);
+            }
+            
+            // Create new user
+            const newUser = await storage.createUser({
+              username: `google_${profile.id}`,
+              email,
+              password: await hashPassword(Math.random().toString(36).substring(2)),
+              displayName: profile.displayName || '',
+              googleId: profile.id,
+              dailyConversionsRemaining: 5,
+              lastConversionReset: new Date(),
+              isPro: false
+            });
+            
+            return done(null, newUser);
+          } catch (error) {
+            return done(error);
+          }
+        }
+      )
+    );
   }
 
-  // Serialize/Deserialize User
+  // Serialize user
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
+  // Deserialize user
   passport.deserializeUser(async (id: string, done) => {
     try {
       const user = await getUserById(id);
       done(null, user);
     } catch (error) {
-      done(error);
+      done(error, null);
     }
   });
 
-  // Auth routes
-  app.post('/api/register', async (req, res) => {
+  // Authentication routes
+  app.post('/api/register', async (req, res, next) => {
     try {
       const { username, email, password, displayName } = req.body;
       
       // Check if username or email already exists
-      const existingUsername = await getUserByUsername(username);
+      const existingUsername = await storage.getUserByUsername(username);
       if (existingUsername) {
-        return res.status(400).json({ message: 'Username already taken.' });
+        return res.status(400).json({ message: 'Username already exists' });
       }
       
-      const existingEmail = await getUserByEmail(email);
+      const existingEmail = await storage.getUserByEmail(email);
       if (existingEmail) {
-        return res.status(400).json({ message: 'Email already registered.' });
+        return res.status(400).json({ message: 'Email already exists' });
       }
       
-      // Create user
+      // Create new user
       const hashedPassword = await hashPassword(password);
-      const user = await createUser({
+      const user = await storage.createUser({
         username,
         email,
         password: hashedPassword,
         displayName: displayName || username,
-        isPro: false,
-        dailyConversionsLeft: 5
+        googleId: null,
+        dailyConversionsRemaining: 5,
+        lastConversionReset: new Date(),
+        isPro: false
       });
-      
-      if (!user) {
-        return res.status(500).json({ message: 'Failed to create user.' });
-      }
       
       // Log in the new user
       req.login(user, (err) => {
-        if (err) {
-          return res.status(500).json({ message: 'Failed to log in.' });
-        }
-        return res.status(201).json(user);
+        if (err) return next(err);
+        
+        // Don't send password in response
+        const { password, ...userWithoutPassword } = user;
+        return res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
-      console.error('Register error:', error);
-      res.status(500).json({ message: 'Registration failed.' });
+      next(error);
     }
   });
 
   app.post('/api/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
-      if (err) {
-        return res.status(500).json({ message: 'Login failed.' });
-      }
-      if (!user) {
-        return res.status(401).json({ message: info?.message || 'Invalid credentials.' });
-      }
-      req.login(user, (loginErr) => {
-        if (loginErr) {
-          return res.status(500).json({ message: 'Login failed.' });
-        }
-        return res.status(200).json(user);
+      if (err) return next(err);
+      if (!user) return res.status(401).json(info);
+      
+      req.login(user, (err) => {
+        if (err) return next(err);
+        
+        // Don't send password in response
+        const { password, ...userWithoutPassword } = user;
+        return res.status(200).json(userWithoutPassword);
       });
     })(req, res, next);
   });
@@ -205,9 +204,9 @@ export async function setupAuth(app: Express) {
   app.post('/api/logout', (req, res) => {
     req.logout((err) => {
       if (err) {
-        return res.status(500).json({ message: 'Logout failed.' });
+        return res.status(500).json({ message: 'Error logging out' });
       }
-      res.status(200).json({ message: 'Logged out successfully.' });
+      res.status(200).json({ message: 'Logged out successfully' });
     });
   });
 
@@ -215,20 +214,19 @@ export async function setupAuth(app: Express) {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
-    res.json(req.user);
+    
+    // Don't send password in response
+    const { password, ...userWithoutPassword } = req.user;
+    res.json(userWithoutPassword);
   });
 
-  // Google auth routes
+  // Google OAuth routes
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     app.get('/auth/google', passport.authenticate('google'));
     
-    app.get('/auth/google/callback', 
-      passport.authenticate('google', { 
-        failureRedirect: '/auth' 
-      }),
-      (req, res) => {
-        res.redirect('/');
-      }
-    );
+    app.get('/auth/google/callback', passport.authenticate('google', {
+      successRedirect: '/',
+      failureRedirect: '/login'
+    }));
   }
 }

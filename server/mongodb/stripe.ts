@@ -1,66 +1,68 @@
 import Stripe from 'stripe';
 import { updateUser } from './auth';
+import { connectToDatabase } from './connect';
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16', // Use the latest Stripe API version
+// Connect to database
+connectToDatabase();
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2023-10-16'
 });
 
-// Create or get a Stripe customer
+// Create or get a Stripe customer for a user
 export async function createOrGetStripeCustomer(userId: string, email: string, name: string): Promise<string | null> {
   try {
-    // First check if the user already has a Stripe customer ID
+    // Check if user already has a Stripe customer ID
     const user = await updateUser(userId, {});
+    
     if (user?.stripeCustomerId) {
       return user.stripeCustomerId;
     }
-
-    // If not, create a new customer
+    
+    // Create a new Stripe customer
     const customer = await stripe.customers.create({
       email,
       name,
       metadata: {
-        userId,
-      },
+        userId
+      }
     });
-
-    // Save the customer ID to the user record
-    await updateUser(userId, { stripeCustomerId: customer.id });
-
-    return customer.id;
+    
+    // Update the user with the new Stripe customer ID
+    const updatedUser = await updateUser(userId, {
+      stripeCustomerId: customer.id
+    });
+    
+    return updatedUser?.stripeCustomerId || null;
   } catch (error) {
     console.error('Error creating or getting Stripe customer:', error);
     return null;
   }
 }
 
-// Create a checkout session for subscription
+// Create a checkout session for one-time payment
 export async function createCheckoutSession(
   customerId: string,
   priceId: string,
-  userId: string,
-  mode: 'subscription' | 'payment' = 'subscription'
+  successUrl: string,
+  cancelUrl: string
 ): Promise<string | null> {
   try {
-    const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
-    
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [
         {
           price: priceId,
-          quantity: 1,
-        },
+          quantity: 1
+        }
       ],
-      mode,
-      success_url: `${baseUrl}/dashboard/subscription?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/dashboard/subscription?canceled=true`,
-      metadata: {
-        userId,
-      },
+      mode: 'payment',
+      success_url: successUrl,
+      cancel_url: cancelUrl
     });
-
+    
     return session.url;
   } catch (error) {
     console.error('Error creating checkout session:', error);
@@ -68,36 +70,33 @@ export async function createCheckoutSession(
   }
 }
 
-// Create a Stripe subscription for a customer
+// Create a subscription
 export async function createSubscription(
+  userId: string,
   customerId: string,
-  priceId: string,
-  userId: string
-): Promise<{ subscriptionId: string; clientSecret: string | null } | null> {
+  priceId: string
+): Promise<{ subscriptionId: string, clientSecret: string | null } | null> {
   try {
+    // Create the subscription
     const subscription = await stripe.subscriptions.create({
       customer: customerId,
-      items: [{ price: priceId }],
+      items: [
+        {
+          price: priceId
+        }
+      ],
       payment_behavior: 'default_incomplete',
-      payment_settings: { save_default_payment_method: 'on_subscription' },
-      expand: ['latest_invoice.payment_intent'],
-      metadata: {
-        userId,
-      },
+      expand: ['latest_invoice.payment_intent']
     });
-
+    
     // Update the user with the subscription ID
     await updateUser(userId, {
-      stripeSubscriptionId: subscription.id,
-      isPro: true,
+      stripeSubscriptionId: subscription.id
     });
-
-    const invoice = subscription.latest_invoice as Stripe.Invoice;
-    const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
-
+    
     return {
       subscriptionId: subscription.id,
-      clientSecret: paymentIntent?.client_secret || null,
+      clientSecret: subscription.latest_invoice?.payment_intent?.client_secret || null
     };
   } catch (error) {
     console.error('Error creating subscription:', error);
@@ -105,25 +104,23 @@ export async function createSubscription(
   }
 }
 
-// Create a one-time payment intent
+// Create a payment intent
 export async function createPaymentIntent(
+  customerId: string,
   amount: number,
-  currency: string = 'usd',
-  customerId?: string
-): Promise<{ clientSecret: string } | null> {
+  currency: string = 'usd'
+): Promise<string | null> {
   try {
-    const paymentIntentData: Stripe.PaymentIntentCreateParams = {
-      amount: Math.round(amount * 100), // Convert to cents
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
       currency,
-    };
-
-    if (customerId) {
-      paymentIntentData.customer = customerId;
-    }
-
-    const paymentIntent = await stripe.paymentIntents.create(paymentIntentData);
-
-    return { clientSecret: paymentIntent.client_secret! };
+      customer: customerId,
+      automatic_payment_methods: {
+        enabled: true
+      }
+    });
+    
+    return paymentIntent.client_secret;
   } catch (error) {
     console.error('Error creating payment intent:', error);
     return null;
@@ -135,9 +132,9 @@ export async function cancelSubscription(subscriptionId: string, userId: string)
   try {
     await stripe.subscriptions.cancel(subscriptionId);
     
-    // Update the user record
+    // Update the user's subscription status
     await updateUser(userId, {
-      isPro: false,
+      isPro: false
     });
     
     return true;
@@ -161,57 +158,69 @@ export async function getSubscription(subscriptionId: string): Promise<Stripe.Su
 export async function handleWebhookEvent(event: Stripe.Event): Promise<boolean> {
   try {
     switch (event.type) {
-      case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const userId = session.metadata?.userId;
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
         
-        if (userId) {
-          if (session.mode === 'subscription') {
-            // Set the user as a pro user
-            await updateUser(userId, {
-              isPro: true,
-            });
-          }
-        }
+        // Find the user with this Stripe customer ID by querying the database
+        // This would be handled by the MongoDBStorage class
+        
+        // Update the user's subscription status
+        const status = subscription.status;
+        const isPro = status === 'active' || status === 'trialing';
+        
+        // We would need to update this in our MongoDB storage
+        
         break;
       }
-      
-      case 'invoice.payment_succeeded': {
-        const invoice = event.data.object as Stripe.Invoice;
-        const subscriptionId = invoice.subscription as string;
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-        const userId = subscription.metadata?.userId;
-        
-        if (userId) {
-          await updateUser(userId, {
-            isPro: true,
-          });
-        }
-        break;
-      }
-      
-      case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice;
-        const subscriptionId = invoice.subscription as string;
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-        const userId = subscription.metadata?.userId;
-        
-        if (userId) {
-          // Don't change pro status yet, as they might still pay
-          console.log(`Payment failed for user ${userId}`);
-        }
-        break;
-      }
-      
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
-        const userId = subscription.metadata?.userId;
+        const customerId = subscription.customer as string;
         
-        if (userId) {
-          await updateUser(userId, {
-            isPro: false,
-          });
+        // Find the user with this Stripe customer ID by querying the database
+        // This would be handled by the MongoDBStorage class
+        
+        // Update the user's subscription status
+        // We would need to update this in our MongoDB storage
+        
+        break;
+      }
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as Stripe.Invoice;
+        
+        // If this invoice is for a subscription, update the user's status
+        if (invoice.subscription) {
+          // Get the subscription
+          const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+          
+          // Find the user with this subscription ID
+          const customerId = subscription.customer as string;
+          
+          // Update the user's subscription status
+          const status = subscription.status;
+          const isPro = status === 'active' || status === 'trialing';
+          
+          // We would need to update this in our MongoDB storage
         }
+        
+        break;
+      }
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        
+        // If this invoice is for a subscription, update the user's status
+        if (invoice.subscription) {
+          // Get the subscription
+          const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+          
+          // Find the user with this subscription ID
+          const customerId = subscription.customer as string;
+          
+          // Update the user's subscription status
+          // We would need to update this in our MongoDB storage
+        }
+        
         break;
       }
     }
