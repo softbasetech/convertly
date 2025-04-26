@@ -621,16 +621,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
 
-        // Update user with Stripe info
+        // Update user with Paystack customer info
         await storage.updateUserStripeInfo(user.id, {
           stripeCustomerId: customerId,
-          stripeSubscriptionId: subscription.id,
+          stripeSubscriptionId: null // We'll update this after successful payment
         });
 
+        // Send the Paystack authorization URL response
         res.send({
-          subscriptionId: subscription.id,
-          clientSecret:
-            subscription.latest_invoice?.payment_intent?.client_secret,
+          authorization_url: response.data.authorization_url,
+          access_code: response.data.access_code,
+          reference: response.data.reference
         });
       } catch (error: any) {
         return res.status(400).send({ error: { message: error.message } });
