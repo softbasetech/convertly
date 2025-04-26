@@ -608,7 +608,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customer: customerId,
           items: [
             {
-              price: process.env.STRIPE_PRICE_ID || "price_missing", // This should be configured in env
+              price: process.env.STRIPE_PRICE_ID || (() => { throw new Error("STRIPE_PRICE_ID environment variable is not configured") })(),
             },
           ],
           payment_behavior: "default_incomplete",
